@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.forum.mapper.ForumMapper">
+    
+    <resultMap type="Forum" id="ForumResult">
+        <result property="id"    column="id"    />
+        <result property="username"    column="username"    />
+        <result property="content"    column="content"    />
+        <result property="title"    column="title"    />
+        <result property="status"    column="status"    />
+        <result property="remark1"    column="remark1"    />
+        <result property="remark2"    column="remark2"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectForumVo">
+        select id, username, content, title, status, remark1, remark2, remark, create_time, update_time from forum
+    </sql>
+
+    <select id="selectForumList" parameterType="Forum" resultMap="ForumResult">
+        <include refid="selectForumVo"/>
+        <where>  
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="title != null  and title != ''">  and title like concat('%', #{title}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="remark1 != null  and remark1 != ''"> and remark1 = #{remark1}</if>
+            <if test="remark2 != null  and remark2 != ''"> and remark2 = #{remark2}</if>
+        </where>
+    </select>
+    
+    <select id="selectForumById" parameterType="Long" resultMap="ForumResult">
+        <include refid="selectForumVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertForum" parameterType="Forum">
+        insert into forum
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="username != null">username,</if>
+            <if test="content != null">content,</if>
+            <if test="title != null">title,</if>
+            <if test="status != null">status,</if>
+            <if test="remark1 != null">remark1,</if>
+            <if test="remark2 != null">remark2,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="username != null">(SELECT user_name FROM sys_user WHERE user_id = #{username}),</if>
+            <if test="content != null">#{content},</if>
+            <if test="title != null">#{title},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark1 != null">#{remark1},</if>
+            <if test="remark2 != null">#{remark2},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateForum" parameterType="Forum">
+        update forum
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null">username = #{username},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark1 != null">remark1 = #{remark1},</if>
+            <if test="remark2 != null">remark2 = #{remark2},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteForumById" parameterType="Long">
+        delete from forum where id = #{id}
+    </delete>
+
+    <delete id="deleteForumByIds" parameterType="String">
+        delete from forum where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

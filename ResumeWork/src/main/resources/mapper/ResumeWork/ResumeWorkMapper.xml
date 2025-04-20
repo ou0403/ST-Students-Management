@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ResumeWork.mapper.ResumeWorkMapper">
+    
+    <resultMap type="ResumeWork" id="ResumeWorkResult">
+        <result property="id"    column="id"    />
+        <result property="homeworkName"    column="homework_name"    />
+        <result property="homeworkStatic"    column="homework_static"    />
+        <result property="workPost"    column="work_post"    />
+        <result property="remark"    column="remark"    />
+        <result property="remark1"    column="remark1"    />
+        <result property="remark2"    column="remark2"    />
+    </resultMap>
+
+    <sql id="selectResumeWorkVo">
+        select id, homework_name, homework_static, work_post, remark, remark1, remark2 from resume_work
+    </sql>
+
+    <select id="selectResumeWorkList" parameterType="ResumeWork" resultMap="ResumeWorkResult">
+        <include refid="selectResumeWorkVo"/>
+        <where>  
+            <if test="homeworkName != null  and homeworkName != ''"> and homework_name like concat('%', #{homeworkName}, '%')</if>
+            <if test="homeworkStatic != null  and homeworkStatic != ''"> and homework_static = #{homeworkStatic}</if>
+            <if test="workPost != null  and workPost != ''"> and work_post = #{workPost}</if>
+            <if test="remark1 != null  and remark1 != ''"> and remark1 = #{remark1}</if>
+            <if test="remark2 != null  and remark2 != ''"> and remark2 = #{remark2}</if>
+        </where>
+    </select>
+    
+    <select id="selectResumeWorkById" parameterType="Long" resultMap="ResumeWorkResult">
+        <include refid="selectResumeWorkVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertResumeWork" parameterType="ResumeWork" useGeneratedKeys="true" keyProperty="id">
+        insert into resume_work
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="homeworkName != null">homework_name,</if>
+            <if test="homeworkStatic != null">homework_static,</if>
+            <if test="workPost != null">work_post,</if>
+            <if test="remark != null">remark,</if>
+            <if test="remark1 != null">remark1,</if>
+            <if test="remark2 != null">remark2,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="homeworkName != null">#{homeworkName},</if>
+            <if test="homeworkStatic != null">#{homeworkStatic},</if>
+            <if test="workPost != null">#{workPost},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="remark1 != null">#{remark1},</if>
+            <if test="remark2 != null">#{remark2},</if>
+         </trim>
+    </insert>
+
+    <update id="updateResumeWork" parameterType="ResumeWork">
+        update resume_work
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="homeworkName != null">homework_name = #{homeworkName},</if>
+            <if test="homeworkStatic != null">homework_static = #{homeworkStatic},</if>
+            <if test="workPost != null">work_post = #{workPost},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="remark1 != null">remark1 = #{remark1},</if>
+            <if test="remark2 != null">remark2 = #{remark2},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteResumeWorkById" parameterType="Long">
+        delete from resume_work where id = #{id}
+    </delete>
+
+    <delete id="deleteResumeWorkByIds" parameterType="String">
+        delete from resume_work where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

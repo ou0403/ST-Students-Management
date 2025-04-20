@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.leave.mapper.SysRoomMapper">
+
+    <resultMap type="SysRoom" id="SysRoomResult">
+        <result property="roomId"    column="room_id"    />
+        <result property="roomName"    column="room_name"    />
+        <result property="roomDescribe"    column="room_describe"    />
+        <result property="room"    column="room"    />
+        <result property="roomHeight"    column="room_height"    />
+        <result property="roomWeight"    column="room_weight"    />
+        <result property="deptId"    column="room_dept_id"    />
+        <result property="userId"    column="room_user_id"    />
+        <association property="user" column="room_user_id" javaType="SysUser" resultMap="SysUserResult" />
+        <association property="dept" column="room_dept_id" javaType="SysDept" resultMap="SysDeptResult" />
+<!--        <result property="roomReserveA"    column="room_reserve_a"    />-->
+<!--        <result property="roomReserveB"    column="room_reserve_b"    />-->
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
+    </resultMap>
+
+    <resultMap type="SysDept" id="SysDeptResult">
+        <id     property="deptId"     column="dept_id"     />
+        <result property="deptName"   column="dept_name"   />
+    </resultMap>
+
+    <sql id="selectSysRoomVo">
+#         select room_id, room_name, room_describe, room, room_height, room_weight, dept_id, user_id, room_reserve_a, room_reserve_b from sys_room
+        select sr.room_id, sr.room_name, sr.room_describe, sr.room, sr.room_height, sr.room_weight, sr.dept_id as room_dept_id, sr.user_id as room_user_id,
+                u.user_id,u.nick_name,u.user_name,
+                d.dept_id,d.dept_name
+        from sys_room sr
+        join sys_user u on sr.user_id = u.user_id
+        join sys_dept d on sr.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectSysRoomList" parameterType="SysRoom" resultMap="SysRoomResult">
+        <include refid="selectSysRoomVo"/>
+        ${params.dataScope}
+        <where>
+            <if test="roomName != null  and roomName != ''"> and room_name like concat('%', #{roomName}, '%')</if>
+            <if test="roomDescribe != null  and roomDescribe != ''"> and room_describe = #{roomDescribe}</if>
+            <if test="room != null  and room != ''"> and room = #{room}</if>
+            <if test="roomHeight != null "> and room_height = #{roomHeight}</if>
+            <if test="roomWeight != null "> and room_weight = #{roomWeight}</if>
+            <if test="deptId != null "> and sr.dept_id = #{deptId}</if>
+            <if test="userId != null "> and sr.user_id = #{userId}</if>
+<!--            <if test="roomReserveA != null  and roomReserveA != ''"> and room_reserve_a = #{roomReserveA}</if>-->
+<!--            <if test="roomReserveB != null  and roomReserveB != ''"> and room_reserve_b = #{roomReserveB}</if>-->
+        </where>
+
+    </select>
+
+    <select id="selectSysRoomByRoomId" parameterType="Long" resultMap="SysRoomResult">
+        <include refid="selectSysRoomVo"/>
+        where room_id = #{roomId}
+    </select>
+
+    <insert id="insertSysRoom" parameterType="SysRoom" useGeneratedKeys="true" keyProperty="roomId">
+        insert into sys_room
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roomName != null">room_name,</if>
+            <if test="roomDescribe != null">room_describe,</if>
+            <if test="room != null">room,</if>
+            <if test="roomHeight != null">room_height,</if>
+            <if test="roomWeight != null">room_weight,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+<!--            <if test="roomReserveA != null">room_reserve_a,</if>-->
+<!--            <if test="roomReserveB != null">room_reserve_b,</if>-->
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roomName != null">#{roomName},</if>
+            <if test="roomDescribe != null">#{roomDescribe},</if>
+            <if test="room != null">#{room},</if>
+            <if test="roomHeight != null">#{roomHeight},</if>
+            <if test="roomWeight != null">#{roomWeight},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+<!--            <if test="roomReserveA != null">#{roomReserveA},</if>-->
+<!--            <if test="roomReserveB != null">#{roomReserveB},</if>-->
+         </trim>
+    </insert>
+
+    <update id="updateSysRoom" parameterType="SysRoom">
+        update sys_room
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roomName != null">room_name = #{roomName},</if>
+            <if test="roomDescribe != null">room_describe = #{roomDescribe},</if>
+            <if test="room != null">room = #{room},</if>
+            <if test="roomHeight != null">room_height = #{roomHeight},</if>
+            <if test="roomWeight != null">room_weight = #{roomWeight},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+<!--            <if test="roomReserveA != null">room_reserve_a = #{roomReserveA},</if>-->
+<!--            <if test="roomReserveB != null">room_reserve_b = #{roomReserveB},</if>-->
+        </trim>
+        where room_id = #{roomId}
+    </update>
+
+    <delete id="deleteSysRoomByRoomId" parameterType="Long">
+        delete from sys_room where room_id = #{roomId}
+    </delete>
+
+    <delete id="deleteSysRoomByRoomIds" parameterType="String">
+        delete from sys_room where room_id in
+        <foreach item="roomId" collection="array" open="(" separator="," close=")">
+            #{roomId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.leave.mapper.SysLeaveApprovalMapper">
+    
+    <resultMap type="SysLeaveApproval" id="SysLeaveApprovalResult">
+        <result property="approvalId"    column="approval_id"    />
+        <result property="leaveId"    column="leave_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="approvalStatuss"    column="approval_statuss"    />
+        <result property="approvalSequence"    column="approval_sequence"    />
+        <result property="approvalMessage"    column="approval_message"    />
+        <result property="approvalTime"    column="approval_time"    />
+    </resultMap>
+
+    <sql id="selectSysLeaveApprovalVo">
+        select approval_id, leave_id, user_id, approval_statuss, approval_sequence, approval_message, approval_time from sys_leave_approval
+    </sql>
+
+    <select id="selectSysLeaveApprovalList" parameterType="SysLeaveApproval" resultMap="SysLeaveApprovalResult">
+        <include refid="selectSysLeaveApprovalVo"/>
+        <where>  
+            <if test="leaveId != null "> and leave_id = #{leaveId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="approvalStatuss != null "> and approval_statuss = #{approvalStatuss}</if>
+            <if test="approvalSequence != null "> and approval_sequence = #{approvalSequence}</if>
+            <if test="approvalMessage != null  and approvalMessage != ''"> and approval_message = #{approvalMessage}</if>
+            <if test="approvalTime != null "> and approval_time = #{approvalTime}</if>
+        </where>
+        order by approval_sequence
+    </select>
+    
+    <select id="selectSysLeaveApprovalByApprovalId" parameterType="Long" resultMap="SysLeaveApprovalResult">
+        <include refid="selectSysLeaveApprovalVo"/>
+        where approval_id = #{approvalId}
+    </select>
+
+    <insert id="insertSysLeaveApproval" parameterType="SysLeaveApproval">
+        insert into sys_leave_approval
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="approvalId != null">approval_id,</if>
+            <if test="leaveId != null">leave_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="approvalStatuss != null">approval_statuss,</if>
+            <if test="approvalSequence != null">approval_sequence,</if>
+            <if test="approvalMessage != null">approval_message,</if>
+            <if test="approvalTime != null">approval_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="approvalId != null">#{approvalId},</if>
+            <if test="leaveId != null">#{leaveId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="approvalStatuss != null">#{approvalStatuss},</if>
+            <if test="approvalSequence != null">#{approvalSequence},</if>
+            <if test="approvalMessage != null">#{approvalMessage},</if>
+            <if test="approvalTime != null">#{approvalTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysLeaveApproval" parameterType="SysLeaveApproval">
+        update sys_leave_approval
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="leaveId != null">leave_id = #{leaveId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="approvalStatuss != null">approval_statuss = #{approvalStatuss},</if>
+            <if test="approvalSequence != null">approval_sequence = #{approvalSequence},</if>
+            <if test="approvalMessage != null">approval_message = #{approvalMessage},</if>
+            approval_time = sysdate(),
+        </trim>
+        where approval_id = #{approvalId}
+    </update>
+
+    <delete id="deleteSysLeaveApprovalByApprovalId" parameterType="Long">
+        delete from sys_leave_approval where approval_id = #{approvalId}
+    </delete>
+
+    <delete id="deleteSysLeaveApprovalByApprovalIds" parameterType="String">
+        delete from sys_leave_approval where approval_id in 
+        <foreach item="approvalId" collection="array" open="(" separator="," close=")">
+            #{approvalId}
+        </foreach>
+    </delete>
+</mapper>

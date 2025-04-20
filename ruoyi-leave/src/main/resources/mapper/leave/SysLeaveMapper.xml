@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.leave.mapper.SysLeaveMapper">
+
+    <resultMap type="SysLeave" id="SysLeaveResult">
+        <result property="leaveId"    column="leave_id"    />
+        <result property="leaveType"    column="leave_type"    />
+        <result property="approvalStatus"    column="approval_status"    />
+        <result property="timeType"    column="time_type"    />
+        <result property="firstTime"    column="first_time"    />
+        <result property="lastTime"    column="last_time"    />
+        <result property="leaveReason"    column="leave_reason"    />
+        <result property="leaveForm"    column="leave_form"    />
+        <result property="userId"    column="leave_user_id"    />
+        <result property="deptId"    column="leave_dept_id"    />
+        <result property="creatTime"    column="creat_time"    />
+        <result property="leaveReserveA"    column="leave_reserve_a"    />
+        <result property="leaveReserveB"    column="leave_reserve_b"    />
+<!--        <result property="creatTime"    column="creat_time"    />-->
+        <association property="user" column="leave_user_id" javaType="SysUser" resultMap="SysUserResult" />
+        <association property="dept" column="leave_dept_id" javaType="SysDept" resultMap="SysDeptResult" />
+
+
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
+    </resultMap>
+
+    <resultMap type="SysDept" id="SysDeptResult">
+        <id     property="deptId"     column="dept_id"     />
+        <result property="deptName"   column="dept_name"   />
+    </resultMap>
+
+
+
+
+    <sql id="selectSysLeaveVo">
+#         select leave_id, leave_type, approval_status, time_type, first_time, last_time, leave_reason, leave_form, user_id, dept_id, leave_reserve_a, leave_reserve_b from sys_leave
+        select sl.leave_id, sl.leave_type, sl.approval_status, sl.time_type, sl.first_time, sl.last_time, sl.leave_reason, sl.leave_form, sl.user_id as leave_user_id, sl.dept_id as leave_dept_id,leave_reserve_a, leave_reserve_b,sl.creat_time ,
+            u.user_id,u.nick_name,u.user_name,
+                d.dept_id,d.dept_name
+        from sys_leave sl
+        join sys_user u on sl.user_id = u.user_id
+        join sys_dept d on sl.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectSysLeaveList" parameterType="SysLeave" resultMap="SysLeaveResult">
+        <include refid="selectSysLeaveVo"/>
+        ${params.dataScope}
+        <where>
+            <if test="leaveType != null "> and leave_type = #{leaveType}</if>
+            <if test="approvalStatus != null "> and approval_status = #{approvalStatus}</if>
+            <if test="timeType != null "> and time_type = #{timeType}</if>
+            <if test="firstTime != null "> and first_time = #{firstTime}</if>
+            <if test="lastTime != null "> and last_time = #{lastTime}</if>
+            <if test="leaveReason != null  and leaveReason != ''"> and leave_reason = #{leaveReason}</if>
+            <if test="leaveForm != null  and leaveForm != ''"> and leave_form = #{leaveForm}</if>
+            <if test="userId != null "> and u.user_id = #{userId}</if>
+            <if test="deptId != null "> and u.dept_id = #{deptId}</if>
+        </where>
+        order by sl.creat_time desc
+    </select>
+
+    <select id="selectSysLeaveByLeaveId" parameterType="Long" resultMap="SysLeaveResult">
+        <include refid="selectSysLeaveVo"/>
+        where leave_id = #{leaveId}
+    </select>
+
+    <insert id="insertSysLeave" parameterType="SysLeave" useGeneratedKeys="true" keyProperty="leaveId">
+        insert into sys_leave
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="leaveType != null">leave_type,</if>
+            <if test="approvalStatus != null">approval_status,</if>
+            <if test="timeType != null">time_type,</if>
+            <if test="firstTime != null">first_time,</if>
+            <if test="lastTime != null">last_time,</if>
+            <if test="leaveReason != null">leave_reason,</if>
+            <if test="leaveForm != null">leave_form,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="leaveReserveA != null">leave_reserve_a,</if>
+            <if test="leaveReserveB != null">leave_reserve_b,</if>
+            creat_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="leaveType != null">#{leaveType},</if>
+            <if test="approvalStatus != null">#{approvalStatus},</if>
+            <if test="timeType != null">#{timeType},</if>
+            <if test="firstTime != null">#{firstTime},</if>
+            <if test="lastTime != null">#{lastTime},</if>
+            <if test="leaveReason != null">#{leaveReason},</if>
+            <if test="leaveForm != null">#{leaveForm},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="leaveReserveA != null">#{leaveReserveA},</if>
+            <if test="leaveReserveB != null">#{leaveReserveB},</if>
+            sysdate(),
+        </trim>
+    </insert>
+
+
+    <update id="updateSysLeave" parameterType="SysLeave">
+        update sys_leave
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="leaveType != null">leave_type = #{leaveType},</if>
+            <if test="approvalStatus != null">approval_status = #{approvalStatus},</if>
+            <if test="timeType != null">time_type = #{timeType},</if>
+            <if test="firstTime != null">first_time = #{firstTime},</if>
+            <if test="lastTime != null">last_time = #{lastTime},</if>
+            <if test="leaveReason != null">leave_reason = #{leaveReason},</if>
+            <if test="leaveForm != null">leave_form = #{leaveForm},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="leaveReserveA != null">leave_reserve_a = #{leaveReserveA},</if>
+            <if test="leaveReserveB != null">leave_reserve_b = #{leaveReserveB},</if>
+        </trim>
+        where leave_id = #{leaveId}
+    </update>
+
+    <delete id="deleteSysLeaveByLeaveId" parameterType="Long">
+        delete from sys_leave where leave_id = #{leaveId}
+    </delete>
+
+    <delete id="deleteSysLeaveByLeaveIds" parameterType="String">
+        delete from sys_leave where leave_id in
+        <foreach item="leaveId" collection="array" open="(" separator="," close=")">
+            #{leaveId}
+        </foreach>
+    </delete>
+</mapper>

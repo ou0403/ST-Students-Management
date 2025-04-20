@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.stuhom.mapper.StuHomMapper">
+
+    <resultMap type="stuhom" id="stuhomResult">
+        <result property="id"    column="id"    />
+        <result property="homeworkId"    column="homework_id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="submission"    column="submission"    />
+        <result property="submissionTime"    column="submission_time"    />
+        <result property="graded"    column="graded"    />
+        <result property="score"    column="score"    />
+        <result property="gradeTime"    column="grade_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="remark1"    column="remark1"    />
+        <result property="remark2"    column="remark2"    />
+        <result property="department"    column="department"    />
+        <result property="timeLimit"    column="time_limit"    />
+        <result property="title"    column="title"    />
+        <result property="nickName"    column="nick_name"    />
+    </resultMap>
+
+
+
+    <sql id="selectstuhomVo">
+        select id, homework_id, student_id, submission, submission_time, graded, score, grade_time, remark, remark1, remark2, department, time_limit from student_homework
+    </sql>
+
+    <select id="selectstuhomList" parameterType="stuhom" resultMap="stuhomResult">
+        SELECT
+        sh.id,
+        sh.homework_id,
+        sh.student_id,
+        sh.submission,
+        sh.submission_time,
+        sh.graded,
+        sh.score,
+        sh.grade_time,
+        sh.remark,
+        sh.remark1,
+        sh.remark2,
+        sh.department,
+        sh.time_limit,
+        hw.title,
+        su.nick_name
+        FROM student_homework sh
+        INNER JOIN homework hw ON hw.id = sh.homework_id
+        INNER JOIN sys_user su ON su.user_id = sh.student_id
+        <where>
+            <if test="homeworkId != null "> and homework_id = #{homeworkId}</if>
+            <if test="studentId != null "> and student_id = #{studentId}</if>
+            <if test="submission != null  and submission != ''"> and submission = #{submission}</if>
+            <if test="submissionTime != null "> and submission_time = #{submissionTime}</if>
+            <if test="graded != null "> and graded = #{graded}</if>
+            <if test="score != null "> and score = #{score}</if>
+            <if test="gradeTime != null "> and grade_time = #{gradeTime}</if>
+            <if test="remark1 != null  and remark1 != ''"> and remark1 = #{remark1}</if>
+            <if test="remark2 != null  and remark2 != ''"> and remark2 = #{remark2}</if>
+            <if test="department != null  and department != ''"> and department = #{department}</if>
+            <if test="timeLimit != null "> and time_limit = #{timeLimit}</if>
+            <if test="title != null "> and hw.title = #{title}</if>
+        </where>
+    </select>
+
+    <select id="selectstuhomById" parameterType="Long" resultMap="stuhomResult">
+        <include refid="selectstuhomVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertstuhom" parameterType="stuhom" useGeneratedKeys="true" keyProperty="id">
+        insert into student_homework
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="homeworkId != null">homework_id,</if>
+            <if test="studentId != null">student_id,</if>
+            <if test="submission != null">submission,</if>
+            <if test="submissionTime != null">submission_time,</if>
+            <if test="graded != null">graded,</if>
+            <if test="score != null">score,</if>
+            <if test="gradeTime != null">grade_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="remark1 != null and remark1 != ''">remark1,</if>
+            <if test="remark2 != null and remark2 != ''">remark2,</if>
+            <if test="department != null">department,</if>
+            <if test="timeLimit != null">time_limit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="homeworkId != null">#{homeworkId},</if>
+            <if test="studentId != null">#{studentId},</if>
+            <if test="submission != null">#{submission},</if>
+            <if test="submissionTime != null">#{submissionTime},</if>
+            <if test="graded != null">#{graded},</if>
+            <if test="score != null">#{score},</if>
+            <if test="gradeTime != null">#{gradeTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="remark1 != null and remark1 != ''">#{remark1},</if>
+            <if test="remark2 != null and remark2 != ''">#{remark2},</if>
+            <if test="department != null">#{department},</if>
+            <if test="timeLimit != null">#{timeLimit},</if>
+         </trim>
+    </insert>
+
+    <update id="updatestuhom" parameterType="stuhom">
+        update student_homework
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="homeworkId != null">homework_id = #{homeworkId},</if>
+            <if test="studentId != null">student_id = #{studentId},</if>
+            <if test="submission != null">submission = #{submission},</if>
+            <if test="submissionTime != null">submission_time = #{submissionTime},</if>
+            <if test="graded != null">graded = #{graded},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="gradeTime != null">grade_time = #{gradeTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="remark1 != null and remark1 != ''">remark1 = #{remark1},</if>
+            <if test="remark2 != null and remark2 != ''">remark2 = #{remark2},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="timeLimit != null">time_limit = #{timeLimit},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletestuhomById" parameterType="Long">
+        delete from student_homework where id = #{id}
+    </delete>
+
+    <delete id="deletestuhomByIds" parameterType="String">
+        delete from student_homework where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

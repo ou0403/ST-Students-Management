@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.activity.mapper.SysEventNumberMapper">
+
+    <resultMap type="SysEventNumber" id="SysEventNumberResult">
+        <result property="numberId"    column="number_id"    />
+        <result property="number"    column="number"    />
+        <result property="numberDescribe"    column="number_describe"    />
+        <result property="numberWeeks"    column="number_weeks"    />
+        <result property="numberTime"    column="number_time"    />
+        <result property="userId"    column="e_user_id"    />
+        <result property="creatTime"    column="creat_time"    />
+        <association property="user" column="e_user_id" javaType="SysUser" resultMap="SysUserResult" />
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
+    </resultMap>
+
+    <sql id="selectSysEventNumberVo">
+        select sen.number_id, sen.number, sen.number_describe, sen.number_weeks, sen.number_time, sen.user_id as e_user_id, sen.creat_time, u.user_name, u.nick_name
+        from sys_event_number sen
+        left join sys_user u on sen.user_id = u.user_id
+    </sql>
+
+    <select id="selectSysEventNumberList" parameterType="SysEventNumber" resultMap="SysEventNumberResult">
+        <include refid="selectSysEventNumberVo"/>
+        <where>
+            <if test="number != null  and number != ''"> and number = #{number}</if>
+            <if test="numberDescribe != null  and numberDescribe != ''"> and sen.number_describe = #{numberDescribe}</if>
+            <if test="numberWeeks != null "> and sen.number_weeks = #{numberWeeks}</if>
+            <if test="numberTime != null "> and sen.number_time = #{numberTime}</if>
+            <if test="userId != null "> and sen.user_id = #{userId}</if>
+            <if test="creatTime != null "> and sen.creat_time = #{creatTime}</if>
+        </where>
+    </select>
+
+    <select id="selectSysEventNumberByNumberId" parameterType="Long" resultMap="SysEventNumberResult">
+        <include refid="selectSysEventNumberVo"/>
+        where number_id = #{numberId}
+    </select>
+
+    <insert id="insertSysEventNumber" parameterType="SysEventNumber" useGeneratedKeys="true" keyProperty="numberId">
+        insert into sys_event_number
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="number != null">number,</if>
+            <if test="numberDescribe != null">number_describe,</if>
+            <if test="numberWeeks != null">number_weeks,</if>
+            <if test="numberTime != null">number_time,</if>
+            <if test="userId != null">user_id,</if>
+            creat_time,
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="number != null">#{number},</if>
+            <if test="numberDescribe != null">#{numberDescribe},</if>
+            <if test="numberWeeks != null">#{numberWeeks},</if>
+            <if test="numberTime != null">#{numberTime},</if>
+            <if test="userId != null">#{userId},</if>
+            sysdate()
+        </trim>
+    </insert>
+
+    <update id="updateSysEventNumber" parameterType="SysEventNumber">
+        update sys_event_number
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="number != null">number = #{number},</if>
+            <if test="numberDescribe != null">number_describe = #{numberDescribe},</if>
+            <if test="numberWeeks != null">number_weeks = #{numberWeeks},</if>
+            <if test="numberTime != null">number_time = #{numberTime},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="creatTime != null">creat_time = #{creatTime},</if>
+        </trim>
+        where number_id = #{numberId}
+    </update>
+
+    <delete id="deleteSysEventNumberByNumberId" parameterType="Long">
+        delete from sys_event_number where number_id = #{numberId}
+    </delete>
+
+    <delete id="deleteSysEventNumberByNumberIds" parameterType="String">
+        delete from sys_event_number where number_id in
+        <foreach item="numberId" collection="array" open="(" separator="," close=")">
+            #{numberId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper
+                PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.Resume.mapper.ResumeMapper">
+
+    <resultMap type="Resume" id="ResumeResult">
+        <result property="id"    column="id"    />
+        <result property="stuId"    column="stu_id"    />
+        <result property="notes"    column="notes"    />
+        <result property="remark"    column="remark"    />
+        <result property="resumeSummary"    column="resume_summary"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="stuDeptId"    column="stu_dept_id"    />
+        <result property="stuDeptId"    column="stu_dept_id"    />
+        <result property="qufen"    column="qufen"    />
+    </resultMap>
+
+    <sql id="selectResumeVo">
+        select id, stu_id, notes, remark, resume_summary, create_by, create_time, update_by, update_time, dept_id  from resume
+    </sql>
+
+    <select id="selectResumeList" parameterType="Resume" resultMap="ResumeResult">
+        SELECT
+        re.id,
+        re.stu_id,
+        re.notes,
+        re.remark,
+        re.resume_summary,
+        re.create_by,
+        re.create_time,
+        re.update_by,
+        re.update_time,
+        re.dept_id,
+        re.stu_dept_id,
+        su.user_name,
+        su.qufen
+        FROM
+        resume re
+        LEFT JOIN  sys_user su on  re.stu_id = su.user_id
+        <where>
+            <if test="id != null "> and id = #{id}</if>
+            <if test="stuId != null "> and stu_id = #{stuId}</if>
+            <if test="notes != null  and notes != ''"> and notes = #{notes}</if>
+            <if test="resumeSummary != null  and resumeSummary != ''"> and resume_summary = #{resumeSummary}</if>
+            <if test="deptId != null "> and re.dept_id = #{deptId}</if>
+            <if test="stuDeptId != null "> and stu_dept_id = #{stuDeptId}</if>
+            <if test="userName != null "> and user_name = #{userName}</if>
+        </where>
+    </select>
+
+    <select id="selectResumeById" parameterType="Long" resultMap="ResumeResult">
+        SELECT
+            re.id,
+            re.stu_id,
+            re.notes,
+            re.remark,
+            re.resume_summary,
+            re.create_by,
+            re.create_time,
+            re.update_by,
+            re.update_time,
+            re.dept_id,
+            re.stu_dept_id,
+            su.user_name,
+            su.qufen
+        FROM
+            resume re
+                LEFT JOIN  sys_user su on  re.stu_id = su.user_id
+        where re.id = #{id}
+    </select>
+
+    <insert id="insertResume" parameterType="Resume" useGeneratedKeys="true" keyProperty="id">
+        insert into resume
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">stu_id,</if>
+            <if test="notes != null">notes,</if>
+            <if test="remark != null">remark,</if>
+            <if test="resumeSummary != null">resume_summary,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="stuDeptId != null">stu_dept_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuId != null">#{stuId},</if>
+            <if test="notes != null">#{notes},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="resumeSummary != null">#{resumeSummary},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="stuDeptId != null">#{stuDeptId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateResume" parameterType="Resume">
+        update resume
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuId != null">stu_id = #{stuId},</if>
+            <if test="notes != null">notes = #{notes},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="resumeSummary != null">resume_summary = #{resumeSummary},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="stuDeptId != null">stu_dept_id = #{stuDeptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteResumeById" parameterType="Long">
+        delete from resume where id = #{id}
+    </delete>
+
+    <delete id="deleteResumeByIds" parameterType="String">
+        delete from resume where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

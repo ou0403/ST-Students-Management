@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.activity.mapper.SysEventMapper">
+
+    <resultMap type="SysEvent" id="SysEventResult">
+        <result property="eventId"    column="event_id"    />
+        <result property="numberId"    column="number_id"    />
+        <result property="eventWeeks"    column="event_weeks"    />
+        <result property="eventDate"    column="event_date"    />
+        <result property="slotId"    column="slotId"    />
+        <result property="eventText"    column="event_text"    />
+        <result property="eventColor"    column="event_color"    />
+        <result property="eventTimestamp"    column="event_timestamp"    />
+        <result property="roomReserveA"    column="room_reserve_a"    />
+        <result property="roomReserveB"    column="room_reserve_b"    />
+    </resultMap>
+
+    <sql id="selectSysEventVo">
+        select event_id, number_id, event_weeks, event_date, slotId, event_text, event_color, event_timestamp, room_reserve_a, room_reserve_b from sys_event
+    </sql>
+
+    <select id="selectSysEventList" parameterType="SysEvent" resultMap="SysEventResult">
+        <include refid="selectSysEventVo"/>
+        <where>
+            <if test="numberId != null "> and number_id = #{numberId}</if>
+            <if test="eventWeeks != null "> and event_weeks = #{eventWeeks}</if>
+            <if test="eventDate != null  and eventDate != ''"> and event_date = #{eventDate}</if>
+            <if test="slotId != null "> and slotId = #{slotId}</if>
+            <if test="eventText != null  and eventText != ''"> and event_text = #{eventText}</if>
+            <if test="eventColor != null  and eventColor != ''"> and event_color = #{eventColor}</if>
+            <if test="eventTimestamp != null "> and event_timestamp = #{eventTimestamp}</if>
+            <if test="roomReserveA != null  and roomReserveA != ''"> and room_reserve_a = #{roomReserveA}</if>
+            <if test="roomReserveB != null  and roomReserveB != ''"> and room_reserve_b = #{roomReserveB}</if>
+        </where>
+    </select>
+
+    <select id="selectSysEventByEventId" parameterType="Long" resultMap="SysEventResult">
+        <include refid="selectSysEventVo"/>
+        where event_id = #{eventId}
+    </select>
+
+    <insert id="insertSysEvent" parameterType="SysEvent" useGeneratedKeys="true" keyProperty="eventId">
+        insert into sys_event
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="numberId != null">number_id,</if>
+            <if test="eventWeeks != null">event_weeks,</if>
+            <if test="eventDate != null">event_date,</if>
+            <if test="slotId != null">slotId,</if>
+            <if test="eventText != null">event_text,</if>
+            <if test="eventColor != null">event_color,</if>
+            <if test="eventTimestamp != null">event_timestamp,</if>
+            <if test="roomReserveA != null">room_reserve_a,</if>
+            <if test="roomReserveB != null">room_reserve_b,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="numberId != null">#{numberId},</if>
+            <if test="eventWeeks != null">#{eventWeeks},</if>
+            <if test="eventDate != null">#{eventDate},</if>
+            <if test="slotId != null">#{slotId},</if>
+            <if test="eventText != null">#{eventText},</if>
+            <if test="eventColor != null">#{eventColor},</if>
+            <if test="eventTimestamp != null">#{eventTimestamp},</if>
+            <if test="roomReserveA != null">#{roomReserveA},</if>
+            <if test="roomReserveB != null">#{roomReserveB},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysEvent" parameterType="SysEvent">
+        update sys_event
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="numberId != null">number_id = #{numberId},</if>
+            <if test="eventWeeks != null">event_weeks = #{eventWeeks},</if>
+            <if test="eventDate != null">event_date = #{eventDate},</if>
+            <if test="slotId != null">slotId = #{slotId},</if>
+            <if test="eventText != null">event_text = #{eventText},</if>
+            <if test="eventColor != null">event_color = #{eventColor},</if>
+            <if test="eventTimestamp != null">event_timestamp = #{eventTimestamp},</if>
+            <if test="roomReserveA != null">room_reserve_a = #{roomReserveA},</if>
+            <if test="roomReserveB != null">room_reserve_b = #{roomReserveB},</if>
+        </trim>
+        where event_id = #{eventId}
+    </update>
+
+    <delete id="deleteSysEventByEventId" parameterType="Long">
+        delete from sys_event where event_id = #{eventId}
+    </delete>
+
+    <delete id="deleteSysEventByEventIds" parameterType="String">
+        delete from sys_event where event_id in
+        <foreach item="eventId" collection="array" open="(" separator="," close=")">
+            #{eventId}
+        </foreach>
+    </delete>
+</mapper>

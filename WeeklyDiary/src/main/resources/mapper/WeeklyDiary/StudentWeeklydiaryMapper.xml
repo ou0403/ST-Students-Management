@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.WeeklyDiary.mapper.StudentWeeklydiaryMapper">
+
+
+
+
+
+    <resultMap type="StudentWeeklydiary" id="StudentWeeklydiaryResult">
+        <result property="weeklydiaryId"    column="weeklydiary_id"    />
+        <result property="studentId"    column="student_id"    />
+        <result property="teacherId"    column="teacher_id"    />
+        <result property="departmentId"    column="department_id"    />
+        <result property="dept"    column="dept"    />
+        <result property="title"    column="title"    />
+        <result property="text"    column="text"    />
+        <result property="countent"    column="countent"    />
+        <result property="isnice"    column="isnice"    />
+        <result property="uploadTime"    column="upload_time"    />
+        <result property="remarks1"    column="remarks1"    />
+        <result property="remarks2"    column="remarks2"    />
+        <result property="remarks3"    column="remarks3"    />
+    </resultMap>
+
+
+
+
+    <sql id="selectStudentWeeklydiaryVo">
+        select weeklydiary_id, student_id, teacher_id, department_id, dept, title, text, countent, isnice, upload_time, remarks1, remarks2, remarks3 from student_weeklydiary
+    </sql>
+
+
+
+    <select id="selectWeeklyDiaryStats" resultType="java.util.Map">
+        SELECT
+            COUNT(*) AS totalNum,
+            SUM(CASE WHEN isnice = '优秀' THEN 1 ELSE 0 END) AS excellentNum
+        FROM student_weeklydiary
+        WHERE teacher_id = #{teacherId}
+    </select>
+
+
+
+    <select id="selectStudentWeeklydiaryList" parameterType="StudentWeeklydiary" resultMap="StudentWeeklydiaryResult">
+        <include refid="selectStudentWeeklydiaryVo"/>
+        <where>
+            <if test="studentId != null "> and student_id = #{studentId}</if>
+            <if test="teacherId != null "> and teacher_id = #{teacherId}</if>
+            <if test="departmentId != null "> and department_id = #{departmentId}</if>
+            <if test="dept != null  and dept != ''"> and dept = #{dept}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="text != null  and text != ''"> and text = #{text}</if>
+            <if test="countent != null  and countent != ''"> and countent = #{countent}</if>
+            <if test="isnice != null  and isnice != ''"> and isnice = #{isnice}</if>
+            <if test="uploadTime != null "> and upload_time = #{uploadTime}</if>
+            <if test="remarks1 != null  and remarks1 != ''"> and remarks1 = #{remarks1}</if>
+            <if test="remarks2 != null  and remarks2 != ''"> and remarks2 = #{remarks2}</if>
+            <if test="remarks3 != null  and remarks3 != ''"> and remarks3 = #{remarks3}</if>
+        </where>
+    </select>
+
+
+
+
+    <select id="selectStudentWeeklydiaryByWeeklydiaryId" parameterType="Long" resultMap="StudentWeeklydiaryResult">
+        <include refid="selectStudentWeeklydiaryVo"/>
+        where weeklydiary_id = #{weeklydiaryId}
+    </select>
+
+
+
+
+    <insert id="insertStudentWeeklydiary" parameterType="StudentWeeklydiary" useGeneratedKeys="true" keyProperty="weeklydiaryId">
+        insert into student_weeklydiary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">student_id,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="departmentId != null">department_id,</if>
+            <if test="dept != null">dept,</if>
+            <if test="title != null">title,</if>
+            <if test="text != null">text,</if>
+            <if test="countent != null">countent,</if>
+            <if test="isnice != null">isnice,</if>
+            <if test="uploadTime != null">upload_time,</if>
+            <if test="remarks1 != null">remarks1,</if>
+            <if test="remarks2 != null">remarks2,</if>
+            <if test="remarks3 != null">remarks3,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="departmentId != null">#{departmentId},</if>
+            <if test="dept != null">#{dept},</if>
+            <if test="title != null">#{title},</if>
+            <if test="text != null">#{text},</if>
+            <if test="countent != null">#{countent},</if>
+            <if test="isnice != null">#{isnice},</if>
+            <if test="uploadTime != null">#{uploadTime},</if>
+            <if test="remarks1 != null">#{remarks1},</if>
+            <if test="remarks2 != null">#{remarks2},</if>
+            <if test="remarks3 != null">#{remarks3},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStudentWeeklydiary" parameterType="StudentWeeklydiary">
+        update student_weeklydiary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentId != null">student_id = #{studentId},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="departmentId != null">department_id = #{departmentId},</if>
+            <if test="dept != null">dept = #{dept},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="text != null">text = #{text},</if>
+            <if test="countent != null">countent = #{countent},</if>
+            <if test="isnice != null">isnice = #{isnice},</if>
+            <if test="uploadTime != null">upload_time = #{uploadTime},</if>
+            <if test="remarks1 != null">remarks1 = #{remarks1},</if>
+            <if test="remarks2 != null">remarks2 = #{remarks2},</if>
+            <if test="remarks3 != null">remarks3 = #{remarks3},</if>
+        </trim>
+        where weeklydiary_id = #{weeklydiaryId}
+    </update>
+
+
+
+    <delete id="deleteStudentWeeklydiaryByWeeklydiaryId" parameterType="Long">
+        delete from student_weeklydiary where weeklydiary_id = #{weeklydiaryId}
+    </delete>
+
+
+
+
+    <delete id="deleteStudentWeeklydiaryByWeeklydiaryIds" parameterType="String">
+        delete from student_weeklydiary where weeklydiary_id in
+        <foreach item="weeklydiaryId" collection="array" open="(" separator="," close=")">
+            #{weeklydiaryId}
+        </foreach>
+    </delete>
+</mapper>

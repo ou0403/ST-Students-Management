@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.activity.mapper.SysEventColorMapper">
+    
+    <resultMap type="SysEventColor" id="SysEventColorResult">
+        <result property="colorId"    column="color_id"    />
+        <result property="numberId"    column="number_id"    />
+        <result property="departmentName"    column="department_name"    />
+        <result property="departmentColor"    column="department_color"    />
+        <result property="userId"    column="e_user_id"    />
+        <result property="creatTime"    column="creat_time"    />
+        <association property="user" column="e_user_id" javaType="SysUser" resultMap="SysUserResult" />
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
+    </resultMap>
+    <sql id="selectSysEventColorVo">
+        select sec.color_id, sec.number_id, sec.department_name, sec.department_color, sec.user_id as e_user_id, sec.creat_time, u.user_name, u.nick_name
+        from sys_event_color sec
+        left join sys_user u on sec.user_id = u.user_id
+    </sql>
+
+    <select id="selectSysEventColorList" parameterType="SysEventColor" resultMap="SysEventColorResult">
+        <include refid="selectSysEventColorVo"/>
+        <where>  
+            <if test="numberId != null "> and sec.number_id = #{numberId}</if>
+            <if test="departmentName != null  and departmentName != ''"> and sec.department_name like concat('%', #{departmentName}, '%')</if>
+            <if test="departmentColor != null  and departmentColor != ''"> and sec.department_color = #{departmentColor}</if>
+            <if test="userId != null "> and sec.user_id = #{userId}</if>
+            <if test="creatTime != null "> and sec.creat_time = #{creatTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysEventColorByColorId" parameterType="Long" resultMap="SysEventColorResult">
+        <include refid="selectSysEventColorVo"/>
+        where color_id = #{colorId}
+    </select>
+
+    <insert id="insertSysEventColor" parameterType="SysEventColor" useGeneratedKeys="true" keyProperty="colorId">
+        insert into sys_event_color
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="numberId != null">number_id,</if>
+            <if test="departmentName != null">department_name,</if>
+            <if test="departmentColor != null">department_color,</if>
+            <if test="userId != null">user_id,</if>
+            creat_time
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="numberId != null">#{numberId},</if>
+            <if test="departmentName != null">#{departmentName},</if>
+            <if test="departmentColor != null">#{departmentColor},</if>
+            <if test="userId != null">#{userId},</if>
+            sysdate()
+         </trim>
+    </insert>
+
+    <update id="updateSysEventColor" parameterType="SysEventColor">
+        update sys_event_color
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="numberId != null">number_id = #{numberId},</if>
+            <if test="departmentName != null">department_name = #{departmentName},</if>
+            <if test="departmentColor != null">department_color = #{departmentColor},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="creatTime != null">creat_time = #{creatTime},</if>
+        </trim>
+        where color_id = #{colorId}
+    </update>
+
+    <delete id="deleteSysEventColorByColorId" parameterType="Long">
+        delete from sys_event_color where color_id = #{colorId}
+    </delete>
+
+    <delete id="deleteSysEventColorByColorIds" parameterType="String">
+        delete from sys_event_color where color_id in 
+        <foreach item="colorId" collection="array" open="(" separator="," close=")">
+            #{colorId}
+        </foreach>
+    </delete>
+</mapper>

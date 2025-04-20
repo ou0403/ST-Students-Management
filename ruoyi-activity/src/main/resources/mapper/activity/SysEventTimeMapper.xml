@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.activity.mapper.SysEventTimeMapper">
+    
+    <resultMap type="SysEventTime" id="SysEventTimeResult">
+        <result property="timeId"    column="time_id"    />
+        <result property="numberId"    column="e_number_id"    />
+        <result property="mondayDate"    column="monday_date"    />
+        <result property="sundayDate"    column="sunday_date"    />
+        <result property="eventWeeks"    column="event_weeks"    />
+        <result property="userId"    column="e_user_id"    />
+        <result property="creatTime"    column="creat_time"    />
+        <association property="user" column="e_user_id" javaType="SysUser" resultMap="SysUserResult" />
+        <association property="number" column="e_number_id" javaType="SysEventNumber" resultMap="SysEventNumberResult" />
+    </resultMap>
+
+    <resultMap type="SysUser" id="SysUserResult">
+        <id     property="userId"       column="user_id"      />
+        <result property="userName"     column="user_name"    />
+        <result property="nickName"     column="nick_name"    />
+    </resultMap>
+
+    <resultMap type="SysEventNumber" id="SysEventNumberResult">
+        <result property="numberId"    column="number_id"    />
+        <result property="numberWeeks"    column="number_weeks"    />
+    </resultMap>
+
+    <sql id="selectSysEventTimeVo">
+        select st.time_id, st.number_id as e_number_id, st.monday_date, st.sunday_date, st.event_weeks, st.user_id as e_user_id, st.creat_time, u.user_name, u.nick_name, sen.number_weeks
+        from sys_event_time st
+        left join sys_user u on st.user_id = u.user_id
+        left join sys_event_number sen on st.number_id = sen.number_id
+    </sql>
+
+    <select id="selectSysEventTimeList" parameterType="SysEventTime" resultMap="SysEventTimeResult">
+        <include refid="selectSysEventTimeVo"/>
+        <where>  
+            <if test="numberId != null "> and st.number_id = #{numberId}</if>
+            <if test="mondayDate != null "> and st.monday_date = #{mondayDate}</if>
+            <if test="sundayDate != null "> and  st.sunday_date = #{sundayDate}</if>
+            <if test="eventWeeks != null "> and  st.event_weeks = #{eventWeeks}</if>
+            <if test="userId != null "> and  st.user_id = #{userId}</if>
+            <if test="creatTime != null "> and  st.creat_time = #{creatTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysEventTimeByTimeId" parameterType="Long" resultMap="SysEventTimeResult">
+        <include refid="selectSysEventTimeVo"/>
+        where time_id = #{timeId}
+    </select>
+
+    <select id="selectSysEventTimeByTime" parameterType="SysEventTime" resultMap="SysEventTimeResult">
+        <include refid="selectSysEventTimeVo"/>
+        WHERE timestamp(monday_date) &lt;=#{creatTime}
+        AND  timestamp(sunday_date) &gt;= #{creatTime}
+    </select>
+
+    <insert id="insertSysEventTime" parameterType="SysEventTime" useGeneratedKeys="true" keyProperty="timeId">
+        insert into sys_event_time
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="numberId != null">number_id,</if>
+            <if test="mondayDate != null">monday_date,</if>
+            <if test="sundayDate != null">sunday_date,</if>
+            <if test="eventWeeks != null">event_weeks,</if>
+            <if test="userId != null">user_id,</if>
+            creat_time,
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="numberId != null">#{numberId},</if>
+            <if test="mondayDate != null">#{mondayDate},</if>
+            <if test="sundayDate != null">#{sundayDate},</if>
+            <if test="eventWeeks != null">#{eventWeeks},</if>
+            <if test="userId != null">#{userId},</if>
+            sysdate()
+         </trim>
+    </insert>
+
+    <update id="updateSysEventTime" parameterType="SysEventTime">
+        update sys_event_time
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="numberId != null">number_id = #{numberId},</if>
+            <if test="mondayDate != null">monday_date = #{mondayDate},</if>
+            <if test="sundayDate != null">sunday_date = #{sundayDate},</if>
+            <if test="eventWeeks != null">event_weeks = #{eventWeeks},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="creatTime != null">creat_time = #{creatTime},</if>
+        </trim>
+        where time_id = #{timeId}
+    </update>
+
+    <delete id="deleteSysEventTimeByTimeId" parameterType="Long">
+        delete from sys_event_time where time_id = #{timeId}
+    </delete>
+
+    <delete id="deleteSysEventTimeByTimeIds" parameterType="String">
+        delete from sys_event_time where time_id in 
+        <foreach item="timeId" collection="array" open="(" separator="," close=")">
+            #{timeId}
+        </foreach>
+    </delete>
+</mapper>
